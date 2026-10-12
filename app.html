@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clothesline math - calculators</title>
+<style>
+  :root { --accent: #4a5a8a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f5f6f9; color: #252831; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #dcdfe8; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #6a7391; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #bcc3d4; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #9aa3bd; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Clothesline math</h1>
+  <p class="lede">The load becomes line, the line becomes pins, and the weather becomes hours. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Line plan</h2>
+      <p class="hint">The load meets the line.</p>
+      <label for="l-i">Items in the load</label>
+      <input id="l-i" type="number" value="20" min="0" step="1">
+      <label for="l-c">Labeled spacing each (cm)</label>
+      <input id="l-c" type="number" value="12" min="0" step="1">
+      <label for="l-a">Line available (cm)</label>
+      <input id="l-a" type="number" value="300" min="0" step="10">
+      <button id="l-go">Measure the load</button>
+      <div class="out" id="l-out"></div>
+    </section>
+    <section>
+      <h2>Pin plan</h2>
+      <p class="hint">The basket never has enough.</p>
+      <label for="p-i">Items in the load</label>
+      <input id="p-i" type="number" value="20" min="0" step="1">
+      <label for="p-p">Pins per item</label>
+      <input id="p-p" type="number" value="2" min="0" step="1">
+      <button id="p-go">Count the pins</button>
+      <div class="out" id="p-out"></div>
+    </section>
+    <section>
+      <h2>Dry plan</h2>
+      <p class="hint">The weather sets the clock.</p>
+      <label for="d-t">Temperature (C)</label>
+      <input id="d-t" type="number" value="25" min="0" step="1">
+      <label for="d-h">Humidity (%)</label>
+      <input id="d-h" type="number" value="40" min="0" step="5">
+      <button id="d-go">Time the drying</button>
+      <div class="out" id="d-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/clotheslinemath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('l-go').addEventListener('click', function(){
+  var a=[num('l-i'),num('l-c'),num('l-a')];
+  show('l-out', ClotheslineMath.linePlan.apply(null,a), function(r){ return ClotheslineMath.renderLine.apply(null,[r].concat(a)); });
+});
+document.getElementById('p-go').addEventListener('click', function(){
+  var a=[num('p-i'),num('p-p')];
+  show('p-out', ClotheslineMath.pinPlan.apply(null,a), function(r){ return ClotheslineMath.renderPin.apply(null,[r].concat(a)); });
+});
+document.getElementById('d-go').addEventListener('click', function(){
+  var a=[num('d-t'),num('d-h')];
+  show('d-out', ClotheslineMath.dryPlan.apply(null,a), function(r){ return ClotheslineMath.renderDry.apply(null,[r].concat(a)); });
+});
+</script>
+</body>
+</html>
